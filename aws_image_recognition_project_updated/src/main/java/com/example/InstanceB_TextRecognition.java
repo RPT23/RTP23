@@ -1,6 +1,6 @@
-package com.example.awsimageprocessing;
+package com.example;
 
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.rekognition.RekognitionClient;
 import software.amazon.awssdk.services.rekognition.model.*;
@@ -9,8 +9,6 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 import software.amazon.awssdk.services.sqs.model.Message;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.S3Object;
-
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,10 +20,10 @@ public class InstanceB_TextRecognition {
         String bucketName = "njit-cs-643";
         Region region = Region.US_EAST_1;
 
-     
-        SqsClient sqs = SqsClient.builder().region(region).build();
-        RekognitionClient rekognition = RekognitionClient.builder().region(region).build();
-        S3Client s3 = S3Client.builder().region(region).build();
+        // AWS Clients
+        SqsClient sqs = SqsClient.builder().region(region).credentialsProvider(DefaultCredentialsProvider.create()).build();
+        RekognitionClient rekognition = RekognitionClient.builder().region(region).credentialsProvider(DefaultCredentialsProvider.create()).build();
+        S3Client s3 = S3Client.builder().region(region).credentialsProvider(DefaultCredentialsProvider.create()).build();
 
         boolean done = false;
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"))) {
@@ -37,26 +35,42 @@ public class InstanceB_TextRecognition {
                         .build();
                 ReceiveMessageResponse response = sqs.receiveMessage(receiveRequest);
                 List<Message> messages = response.messages();
-                
+
                 for (Message message : messages) {
                     String imageName = message.body();
+
                     if (imageName.equals("-1")) {
                         done = true;
                         break;
                     }
+
+                    // Create DetectTextRequest with Correct AWS SDK v2 Syntax
                     DetectTextRequest textRequest = DetectTextRequest.builder()
-                            .image(Image.builder().s3Object(S3Object.builder().bucket(bucketName).name(imageName).build()).build())
+                            .image(Image.builder()
+                                    .s3Object(software.amazon.awssdk.services.rekognition.model.S3Object.builder()
+                                            .bucket(bucketName)
+                                            .name(imageName)
+                                            .build())
+                                    .build())
                             .build();
+
+                    // Call AWS Rekognition to Detect Text
                     DetectTextResponse textResponse = rekognition.detectText(textRequest);
+
+                    // Extract detected text
                     String detectedText = textResponse.textDetections().stream()
                             .map(TextDetection::detectedText)
                             .reduce("", (a, b) -> a + " " + b);
+
+                    // Write results to file
                     writer.write(imageName + ": " + detectedText + "\n");
+                    System.out.println("Processed Image: " + imageName);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         System.out.println("Instance B finished processing.");
     }
 }
