@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.example</groupId>
-  <artifactId>textrecognition</artifactId>
+  <artifactId>aws_image_recognition_project_updated</artifactId>
   <version>1.0</version>
 
-  <name>textrecognition</name>
+  <name>aws_image_recognition_project_updated</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
@@ -73,7 +73,7 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.4.1</version>
           <configuration>
-            <mainClass>com.example.InstanceB</mainClass>
+            <mainClass>com.example.InstanceA_CarRecognition</mainClass>
           </configuration>
         </plugin>
         
