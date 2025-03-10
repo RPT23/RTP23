@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 public class InstanceA_CarRecognition {
     public static void main(String[] args) {
         String bucketName = "njit-cs-643";
-        String queueUrl = "https://sqs.us-east-1.amazonaws.com/616826663394/Images";
+        String queueUrl = "https://sqs.us-east-1.amazonaws.com/616826663394/Image";
 
         // Create AWS Clients
         S3Client s3 = S3Client.builder().region(Region.US_EAST_1).build();
