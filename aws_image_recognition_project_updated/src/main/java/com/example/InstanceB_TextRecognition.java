@@ -16,7 +16,7 @@ import java.util.List;
 
 public class InstanceB_TextRecognition {
     public static void main(String[] args) {
-        String queueUrl = "https://sqs.us-east-1.amazonaws.com/616826663394/Images";
+        String queueUrl = "https://sqs.us-east-1.amazonaws.com/616826663394/Image";
         String bucketName = "njit-cs-643";
         Region region = Region.US_EAST_1;
 
